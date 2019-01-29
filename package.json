@@ -1,0 +1,19 @@
+{
+  "name": "iobeez",
+  "version": "1.0.0",
+  "description": "Second NetBeez coding challenge",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/l00sed/IoBeez.git"
+  },
+  "author": "Daniel Tompkins",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/l00sed/IoBeez/issues"
+  },
+  "homepage": "https://github.com/l00sed/IoBeez#readme"
+}
