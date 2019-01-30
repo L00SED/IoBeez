@@ -1,10 +1,11 @@
 {
   "name": "iobeez",
   "version": "1.0.0",
-  "description": "Second NetBeez coding challenge",
+  "description": "Second NetBeez challenge",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon chat-server.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,12 @@
   "bugs": {
     "url": "https://github.com/l00sed/IoBeez/issues"
   },
-  "homepage": "https://github.com/l00sed/IoBeez#readme"
+  "homepage": "https://github.com/l00sed/IoBeez#readme",
+  "dependencies": {
+    "finalhandler": "^1.1.1",
+    "nodemon": "^1.18.9",
+    "serve-static": "^1.13.2",
+    "websocket": "^1.0.28",
+    "websockets": "^0.2.0"
+  }
 }
