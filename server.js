@@ -27,17 +27,17 @@ var serve = serveStatic("./");
 
 /* Current values and value ranges */
 // Array for temperature
-var temperatureRange = [-20, 120];
-var temperature; 
+var tR = [-20, 120];
+var temperature = 72; 
 // Array for smoke
-var smokeRange = [0, 100];
-var smoke;
+var sR = [0, 100];
+var smoke = 0;
 // Array for electricity
-var electricityRange = [0, 5000];
-var electricity;
+var eR = [0, 5000];
+var electricity = 1253;
 // Array for motion
-var motionRange = [0, 1];
-var motion;
+var mR = [0, 1];
+var motion = 1;
 
 // Generate random value from ranges
 function genValue(min, max) {
@@ -48,26 +48,42 @@ function genValue(min, max) {
 
 // Functions for simulating sensor data reception at intervals
 function setTemperature() {
-  setInterval(function() {   
-    temperature = genValue(temperatureRange[0], temperatureRange[1]); 
-    return temperature;
+  setInterval(function() {
+    var change = genValue(-5, 5);
+    if ((temperature + change) > tR[1] || (temperature + change) < tR[0]) {
+      return temperature;
+    } else {
+      temperature += change;
+      return temperature;
+    }
   }, 30000);
 };
 function setSmoke() {
   setInterval(function() {
-    smoke = genValue(smokeRange[0], smokeRange[1]);
-    return smoke;
+    var change = genValue(-5, 5);
+    if ((smoke + change) > sR[1] || (smoke + change) < sR[0]) {
+      return smoke;
+    } else {
+      smoke += change;
+      return smoke;
+    }
   }, 60000);
 };
 function setElectricity() {
   setInterval(function() {
-    electricity = genValue(electricityRange[0], electricityRange[1]);
-    return electricity;
+    var change = genValue(-500, 500);
+    if ((electricity + change) > eR[1] || (electricity + change) < eR[0]) {
+      return electricity;
+    } else {
+      electricity += change;
+      return electricity;
+    }
   }, 1000);
 };
 function setMotion() {
   setInterval(function() {
-    motion = genValue(motionRange[0], motionRange[1]);
+    var change = genValue(0, 1);
+    motion = mR[change];
     return motion;
   }, 30000);
 };
@@ -118,10 +134,10 @@ wsServer.on('request', function(request) {
   setInterval(function() {
     var obj = {
       time: (new Date()).getTime(),
-      temp: temperature,
-      smok: smoke,
-      elec: electricity,
-      moti: motion
+      temperature: temperature,
+      smoke: smoke,
+      electricity: electricity,
+      motion: motion
     };
     history.push(obj);
     history = history.slice(-100);

@@ -14,18 +14,19 @@ $(function() {
       return;
     }
 
-    // Open socket
+    // Open socket connection
     var connection = new WebSocket("ws://127.0.0.1:1337");
+    connection.onerror = function(error) {
+      alert('There\'s a problem with your connection or the server is down.');
+    };
     connection.onmessage = function(message) {
-      var data;
       try {
-        data = JSON.parse(message.data);
+        var data = JSON.parse(message.data);
       } catch (e) {
         console.log("Invalid data: " + message.data);
         return;
       }
       if (data){
-        console.log(data);
         on_message(data);
       }
     }
@@ -60,14 +61,12 @@ $(function() {
       electricity: make_realtime('electricity'),
       motion: make_realtime('motion')
     };
-    /* This webconnectionet sends homogenous messages in the form
-     * {"solarFlare":false,"temperature":-50.68440764896562,"radiation":586,"stamp":"2016-04-06T09:44:19Z"}
-     * where timestamp is a ISO 8601 datetime format
-    */
+
     json_ws(function(data) {
       analog_keys.map(function (key) {
-        console.log(data[key]);
-        realtime[key].data(moment(data.stamp).valueOf(), data[key]);
+        // console.log(data["data"][key]);
+        // console.log(realtime);
+	realtime[key].data(moment(data.stamp).valueOf(), data["data"][key]);
       });
     });
 
@@ -93,6 +92,7 @@ $(function() {
 	      return null;
 	    }
 	    for (; buf[i].ts < ts; i++)
+	      console.log(buf[i].val);
 	      return buf[i].val;
 	}));
 	// opaque, but this tells the callback handler to
@@ -117,20 +117,21 @@ $(function() {
     },
     smoke: {
       title: 'smoke',
-      unit: 'Percentage',
+      unit: 'Percent',
       extent: [0, 100]
     },
     electricity: {
       title: 'electricity',
-      unit: 'Watt',
+      unit: 'Watts',
       extent: [0, 5000]
     },
     motion: {
-      motion: 'motion',
-      unit: 'Bool',
+      title: 'motion',
+      unit: 'Yes (1) / No (0)',
       extent: [0, 1]
     }
   };
+
   Object.keys(charts).map(function (key) {
     var cht = charts[key];
     var num_fmt = d3.format('.3r');
