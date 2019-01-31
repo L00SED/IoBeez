@@ -1,9 +1,10 @@
+// Date parsing
 moment().format();
 
 "use strict";
 
 $(function() {
-  function json_ws(on_message) {
+  function jsonWS(on_message) {
 
     // Try built-in WebSocket
     window.WebSocket = window.WebSocket || window.MozWebSocket;
@@ -37,6 +38,7 @@ $(function() {
 
   }
 
+  // Keys for reading in WS data
   var analog_keys = ['temperature', 'smoke', 'electricity', 'motion'];
   (function() {
     function make_realtime(key) {
@@ -62,7 +64,8 @@ $(function() {
       motion: make_realtime('motion')
     };
 
-    json_ws(function(data) {
+    // Adding stamps for realtime stream
+    jsonWS(function(data) {
       analog_keys.map(function (key) {
         // console.log(data["data"][key]);
         // console.log(realtime);
@@ -78,9 +81,8 @@ $(function() {
         start = start.getTime();
         stop = stop.getTime();
         rt.add_callback(function(buf) {
-          if (!(buf.length > 1 && 
-	  buf[buf.length - 1].ts > stop + step)) {
-	    // Not ready, wait for more data
+          if (!(buf.length > 1 && buf[buf.length - 1].ts > stop + step)) {
+	    // Wait for more data
 	    return false;
 	  }
 	  var r = d3.range(start, stop, step);
@@ -88,15 +90,13 @@ $(function() {
 	  var point = buf[i];
 	  callback(null, r.map(function (ts) {
 	    if (ts < point.ts) {
-	      // We have to drop points if no data is available
+	      // Drop points if no data is available
 	      return null;
 	    }
 	    for (; buf[i].ts < ts; i++)
 	      console.log(buf[i].val);
 	      return buf[i].val;
 	}));
-	// opaque, but this tells the callback handler to
-	// remove this function from its queue
 	return true;
       });
     }, title);
@@ -107,6 +107,7 @@ $(function() {
       .call(context.axis().ticks(12).orient(d));
   });
 
+  // Constructing graphs
   d3.select('#charts').append('div').attr('class', 'rule')
     .call(context.rule());
   charts = {
@@ -134,16 +135,32 @@ $(function() {
 
   Object.keys(charts).map(function (key) {
     var cht = charts[key];
-    var num_fmt = d3.format('.3r');
+    var num_fmt = d3.format(function(n) {
+	if (num_fmt(n) >= 1000)
+	  return '.3r';
+	if (num_fmt(n) <= 999 && num_fmt(n) >= 10)
+	  return '.2r';
+	if (num_fmt(n) <= 10)
+	  return '.1r';
+    });
+	
     d3.select('#charts')
       .insert('div', '.bottom')
       .datum(metric(key, cht.title))
       .attr('class', 'horizon')
       .call(context.horizon()
 	.extent(cht.extent).height(100)
+        .colors(function(d, i) {
+	  console.log(i);
+	  return ["#42f4bf", "#65f2c8", "#91f7d9", "#b7f7e4", "#e0fff5", "#edf7f4"];
+        })
 	.title(cht.title)
 	.format(function (n) { 
-	  return num_fmt(n) + ' ' + cht.unit; 
+	  if (isNaN(num_fmt(n))) {
+	    return '' + cht.unit;
+	  } else {
+	    return num_fmt(n) + ' ' + cht.unit; 
+          }
 	})
       );
   });

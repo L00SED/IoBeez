@@ -10,8 +10,9 @@ var webSocketServer = require('websocket').server;
 var http = require('http');
 
 /* Global variables */
-// latest 100 data points
+// Full data points on latest 100
 var history = [];
+// Individual histories
 var temperatureHist = [];
 var smokeHist = [];
 var electricityHist = [];
